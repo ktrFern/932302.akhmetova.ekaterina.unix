@@ -27,13 +27,11 @@ cleanup() {
     rm -rf "$TmpDir"
     exit $rc
 }
+
 trap cleanup EXIT HUP INT QUIT PIPE TERM
-
 echo "Building in temporary directory: $TmpDir"
-
 cp "$File" "$TmpDir/"
 cd "$TmpDir"
-
 echo "Compiling $File -> $Output"
 
 if g++ "$(basename "$File")" -o "$Output"; then

@@ -23,7 +23,7 @@ TmpDir=$(mktemp -d)
 Path=$(pwd)
 
 cleanup() {
-    local rc=$?
+    rc=$?
     rm -rf "$TmpDir"
     exit $rc
 }

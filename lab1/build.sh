@@ -2,10 +2,22 @@
 
 File="$1"
 
-[ -n "$File" ]
-[ -f "$File" ]
+if [ -z "$File" ]; then
+    echo "Error: no source file specified" >&2
+    exit 1
+fi
 
-Output=$(grep '&Output' "$File" | cut -d: -f2- | xargs)
+if [ ! -f "$File" ]; then
+    echo "Error: file '$File' not found" >&2
+    exit 2
+fi
+
+Output=$(grep '&Output:' "$File" | cut -d: -f2- | xargs || true)
+
+if [ -z "$Output" ]; then
+    echo "Error: &Output: not found in file" >&2
+    exit 3
+fi
 
 TmpDir=$(mktemp -d)
 Path=$(pwd)

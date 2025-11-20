@@ -3,19 +3,19 @@
 File="$1"
 
 if [ -z "$File" ]; then
-    echo "Error: no source file specified" >&2
+    echo "Error: no source file specified"
     exit 1
 fi
 
 if [ ! -f "$File" ]; then
-    echo "Error: file '$File' not found" >&2
+    echo "Error: file '$File' not found"
     exit 2
 fi
 
 Output=$(grep '&Output:' "$File" | cut -d: -f2- | xargs || true)
 
 if [ -z "$Output" ]; then
-    echo "Error: &Output: not found in file" >&2
+    echo "Error: &Output: not found in file"
     exit 3
 fi
 

@@ -31,8 +31,7 @@ public:
             this_thread::sleep_for(chrono::seconds(1));
             unique_lock<mutex> lock(mtx);
 
-            while (ready == 1)
-                cv.wait(lock);
+            while (ready == 1) cv.wait(lock);
 
             data = new Data{ i };
             ready = 1;
@@ -51,9 +50,7 @@ public:
         while (true)
         {
             unique_lock<mutex> lock(mtx);
-            while (!(ready == 1 || finish)) {
-                cv.wait(lock);
-            }
+            while (!(ready == 1 || finish)) cv.wait(lock);
 
             if (finish && !ready)
                 break;
@@ -78,4 +75,5 @@ int main() {
     cout << "Program finished." << endl;
     return 0;
 }
+
 

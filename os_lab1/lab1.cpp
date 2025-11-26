@@ -36,7 +36,6 @@ public:
 
             data = new Data{ i };
             ready = 1;
-
             cout << "Producer: sent message " << i << endl;
             cv.notify_one();
             lock.unlock();
@@ -58,10 +57,8 @@ public:
                 break;
 
             cout << "Consumer: received message " << data->num << endl;
-
             delete data;
             data = nullptr;
-
             ready = 0;
             cv.notify_one();
             lock.unlock();
@@ -74,11 +71,8 @@ int main() {
     Monitor monit(n);
     thread producer(&Monitor::produce, &monit);
     thread consumer(&Monitor::consume, &monit);
-
     producer.join();
     consumer.join();
     cout << "Program finished." << endl;
-
     return 0;
-
 }

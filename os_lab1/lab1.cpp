@@ -70,8 +70,8 @@ public:
 };
 
 int main() {
-    int message_count = 15;
-    Monitor monit(message_count);
+    int n = 15;
+    Monitor monit(n);
     thread producer(&Monitor::produce, &monit);
     thread consumer(&Monitor::consume, &monit);
 
@@ -80,4 +80,5 @@ int main() {
     cout << "Program finished." << endl;
 
     return 0;
+
 }

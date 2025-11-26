@@ -75,5 +75,3 @@ int main() {
     cout << "Program finished." << endl;
     return 0;
 }
-
-

@@ -6,4 +6,4 @@ services:
       - ./shared:/program/shared
     restart: always
     deploy:
-      replicas: 10
+      replicas: 1

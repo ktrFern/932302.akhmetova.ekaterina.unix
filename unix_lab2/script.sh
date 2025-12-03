@@ -10,7 +10,7 @@ mkdir -p "$SHARED_DIR"
 while true; do
 {
     flock -x 21
-    for i in $(seq -f "%03g" 1 100); do
+    for i in $(seq -f "%03g" 1 999); do
         if [[ ! -e "$SHARED_DIR/$i" ]]; then
             ((COUNTER++))
             TMP="$SHARED_DIR/$i.tmp"

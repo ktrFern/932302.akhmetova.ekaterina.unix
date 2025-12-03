@@ -36,7 +36,7 @@ if [[ -f "$SHARED_DIR/$filename" ]]; then
     rm -f "$SHARED_DIR/$filename"
     echo "Deleted: $filename by $CONTAINER_ID"
 else
-    echo "WARNING: $filename not found for deletion by $CONTAINER_ID"
+    echo "ERROR: $filename not found for deletion by $CONTAINER_ID"
 fi
 
 sleep 1

@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    struct sockaddr_in addr;
+    sockaddr_in addr;
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = INADDR_ANY;
@@ -60,11 +60,11 @@ int main(int argc, char* argv[]) {
     }
 
     cout << "Server started on port " << port << endl;
-    sigset_t blockedMask;
+    sigset_t blockedMask, origMask;
     sigemptyset(&blockedMask);
     sigaddset(&blockedMask, SIGHUP);
 
-    if (sigprocmask(SIG_BLOCK, &blockedMask, NULL) == -1) {
+    if (sigprocmask(SIG_BLOCK, &blockedMask, &origMask) == -1) {
         perror("sigprocmask");
         close(listen_fd);
         return EXIT_FAILURE;
@@ -75,16 +75,8 @@ int main(int argc, char* argv[]) {
     sa.sa_handler = sigHupHandler;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = SA_RESTART;
-
     if (sigaction(SIGHUP, &sa, NULL) == -1) {
         perror("sigaction");
-        close(listen_fd);
-        return EXIT_FAILURE;
-    }
-
-    sigset_t origMask;
-    if (sigprocmask(SIG_BLOCK, &blockedMask, &origMask) == -1) {
-        perror("sigprocmask");
         close(listen_fd);
         return EXIT_FAILURE;
     }
@@ -96,6 +88,7 @@ int main(int argc, char* argv[]) {
         FD_ZERO(&fds);
         FD_SET(listen_fd, &fds);
         int maxFd = listen_fd;
+
         if (client_fd != -1) {
             FD_SET(client_fd, &fds);
             if (client_fd > maxFd) maxFd = client_fd;
@@ -116,20 +109,17 @@ int main(int argc, char* argv[]) {
         }
 
         if (FD_ISSET(listen_fd, &fds)) {
-            struct sockaddr_in client_addr;
+            sockaddr_in client_addr;
             socklen_t client_len = sizeof(client_addr);
             int new_client = accept(listen_fd, (struct sockaddr*)&client_addr, &client_len);
             if (new_client == -1) {
-                if (errno == EINTR) {
-                    continue;
-                } else {
-                    perror("accept");
-                    continue;
-                }
+                if (errno == EINTR) continue;
+                perror("accept");
+                continue;
             }
 
             char client_ip[INET_ADDRSTRLEN];
-            if (inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, sizeof(client_ip)) != nullptr) {
+            if (inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, sizeof(client_ip))) {
                 cout << "New connection from " << client_ip << endl;
             } else {
                 cout << "New connection (unknown address)" << endl;
@@ -154,12 +144,8 @@ int main(int argc, char* argv[]) {
                 close(client_fd);
                 client_fd = -1;
             } else {
-                if (errno == EINTR) {
-                    continue;
-                }
-                if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                    continue;
-                }
+                if (errno == EINTR) continue;
+                if (errno == EAGAIN || errno == EWOULDBLOCK) continue;
                 perror("recv");
                 close(client_fd);
                 client_fd = -1;

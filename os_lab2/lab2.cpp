@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    if (listen(listen_fd, SOMAXCONN) == -1) {
+    if (listen(listen_fd, 1) == -1) {
         perror("listen");
         close(listen_fd);
         return EXIT_FAILURE;

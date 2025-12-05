@@ -113,7 +113,6 @@ int main(int argc, char* argv[]) {
             socklen_t client_len = sizeof(client_addr);
             int new_client = accept(listen_fd, (struct sockaddr*)&client_addr, &client_len);
             if (new_client == -1) {
-                if (errno == EINTR) continue;
                 perror("accept");
                 continue;
             }

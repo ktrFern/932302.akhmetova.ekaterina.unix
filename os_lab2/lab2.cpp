@@ -118,12 +118,7 @@ int main(int argc, char* argv[]) {
                 continue;
             }
 
-            char client_ip[INET_ADDRSTRLEN];
-            if (inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, sizeof(client_ip))) {
-                cout << "New connection from " << client_ip << endl;
-            } else {
-                cout << "New connection (unknown address)" << endl;
-            }
+            cout << "New connection" << endl;
 
             if (client_fd == -1) {
                 client_fd = new_client;

@@ -4,6 +4,7 @@
 #include <linux/proc_fs.h>
 #include <linux/uaccess.h>
 #include <linux/time.h>
+#include <linux/time64.h>
 #include <linux/seq_file.h>
 
 MODULE_LICENSE("GPL");
@@ -11,14 +12,14 @@ MODULE_AUTHOR("Student TSU");
 MODULE_DESCRIPTION("TSU module with Lunar New Year 2025 calculations");
 
 #define PROC_FILENAME "tsulab"
-
 #define LNY2025_START_YEAR   2025
 #define LNY2025_START_MONTH  1
 #define LNY2025_START_DAY    29
-
 #define LNY2025_END_YEAR     2025
 #define LNY2025_END_MONTH    2
 #define LNY2025_END_DAY      12
+
+static struct proc_dir_entry *proc_entry;
 
 static unsigned long calc_days_since(int year, int month, int day)
 {
@@ -37,7 +38,7 @@ static unsigned long calc_days_since(int year, int month, int day)
     if (now < event_time)
         return 0;
 
-    return (now - event_time) / 86400;
+    return (unsigned long)((now - event_time) / 86400);
 }
 
 static int proc_show(struct seq_file *m, void *v)
@@ -54,7 +55,6 @@ static int proc_show(struct seq_file *m, void *v)
         days_since_start,
         days_since_end
     );
-
     return 0;
 }
 
@@ -73,19 +73,19 @@ static const struct proc_ops proc_file_ops = {
 static int __init tsu_init(void)
 {
     pr_info("Welcome to the Tomsk State University\n");
-
-    if (!proc_create(PROC_FILENAME, 0, NULL, &proc_file_ops)) {
+    proc_entry = proc_create(PROC_FILENAME, 0444, NULL, &proc_file_ops);
+    if (!proc_entry) {
         pr_err("Failed to create /proc/%s\n", PROC_FILENAME);
         return -ENOMEM;
     }
-
     pr_info("/proc/%s created\n", PROC_FILENAME);
     return 0;
 }
 
 static void __exit tsu_exit(void)
 {
-    proc_remove(proc_create(PROC_FILENAME, 0, NULL, &proc_file_ops));
+    if (proc_entry)
+        proc_remove(proc_entry);
     pr_info("Tomsk State University forever!\n");
 }
 
